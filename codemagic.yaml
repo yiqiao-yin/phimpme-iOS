@@ -8,11 +8,15 @@ workflows:
         APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER
         APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
         APP_STORE_CONNECT_USERNAME: $APP_STORE_CONNECT_USERNAME
-      
+
       xcode: latest
       cocoapods: default
 
     scripts:
+      - name: Set working directory to ios/
+        script: |
+          cd ios
+
       - name: Install system dependencies
         script: |
           sudo apt-get update
@@ -26,9 +30,10 @@ workflows:
 
       - name: Install dependencies using Bundler
         script: |
-          # Use verbose output to troubleshoot
-          bundle install --verbose || exit 1
-          bundle exec pod install --verbose || exit 1
+          # Run bundle install in the correct directory
+          bundle install --verbose 2>&1 | tee bundle_install.log || exit 1
+          echo "=== Bundler Installation Log ==="
+          cat bundle_install.log
 
       - name: Build iOS App for App Store Distribution
         script: |
@@ -60,4 +65,4 @@ workflows:
     publishing:
       email:
         recipients:
-          - your-email@example.com
+          - eagle0504@gmail.com
