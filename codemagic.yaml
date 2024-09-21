@@ -9,8 +9,9 @@ workflows:
         APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER
         APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
         APP_STORE_CONNECT_USERNAME: $APP_STORE_CONNECT_USERNAME
-
-      # Xcode-specific settings
+      
+      # Specify Ruby version to match your Gemfile
+      ruby_version: 3.1.0  # Ensure this matches your project's Ruby version
       xcode: latest # Use the latest stable Xcode version
       cocoapods: default # Automatically install CocoaPods dependencies
 
@@ -22,8 +23,9 @@ workflows:
 
       - name: Install dependencies using Bundler
         script: |
-          bundle install --verbose # Verbose output to catch errors
-          bundle exec pod install --verbose # Verbose pod install for CocoaPods
+          # Add verbose output to diagnose issues
+          bundle install --verbose || exit 1
+          bundle exec pod install --verbose || exit 1
 
       - name: Build iOS App for App Store Distribution
         script: |
@@ -55,4 +57,4 @@ workflows:
     publishing:
       email:
         recipients:
-          - your-email@example.com
+          - eagle0504@gmail.com
