@@ -4,21 +4,15 @@ workflows:
     
     environment:
       vars:
-        # These variables are stored securely in Codemagic and are automatically used.
+        # Store credentials in environment variables
         APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
         APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER
         APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
-        # Optionally, include your Apple Developer Account username
         APP_STORE_CONNECT_USERNAME: $APP_STORE_CONNECT_USERNAME
 
-      # iOS-specific settings
+      # Xcode-specific settings
       xcode: latest # Use the latest stable Xcode version
       cocoapods: default # Automatically install CocoaPods dependencies
-
-      # Secure store for iOS certificates and provisioning profiles
-      keychain:
-        provisioning_profiles:
-          - Encrypted(...) # Encrypted provisioning profile from Codemagic UI
 
     scripts:
       - name: Install dependencies
@@ -50,8 +44,11 @@ workflows:
           --username $APP_STORE_CONNECT_USERNAME \
           --skip_waiting_for_build_processing true
 
+    artifacts:
+      - $HOME/output/*.ipa
+      - $HOME/output/*.xcarchive
+
     publishing:
-      # Optional: Send notifications to slack, email or other integrations
-      slack:
-        channel: "#build-notifications"
-        message: "App Store Submission for iOS completed successfully!"
+      email:
+        recipients:
+          - your-email@example.com
