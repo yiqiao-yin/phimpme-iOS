@@ -4,20 +4,20 @@ workflows:
 
     environment:
       vars:
-        # Store credentials in environment variables
         APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
         APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER
         APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
         APP_STORE_CONNECT_USERNAME: $APP_STORE_CONNECT_USERNAME
-
-      # Xcode and other settings
+      
       xcode: latest
       cocoapods: default
 
     scripts:
-      - name: Print Ruby Version
+      - name: Install system dependencies
         script: |
-          ruby -v # Ensure Ruby is installed and show version for debugging purposes
+          sudo apt-get update
+          sudo apt-get install -y build-essential libssl-dev libffi-dev libsqlite3-dev zlib1g-dev
+          echo "System dependencies installed"
 
       - name: Install Bundler
         script: |
@@ -26,7 +26,7 @@ workflows:
 
       - name: Install dependencies using Bundler
         script: |
-          # Use verbose logging to diagnose issues with `bundle install`
+          # Use verbose output to troubleshoot
           bundle install --verbose || exit 1
           bundle exec pod install --verbose || exit 1
 
