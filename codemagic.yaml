@@ -1,7 +1,7 @@
 workflows:
   ios-workflow-id:
     name: iOS App Store Release Workflow
-    
+
     environment:
       vars:
         # Store credentials in environment variables
@@ -10,8 +10,7 @@ workflows:
         APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
         APP_STORE_CONNECT_USERNAME: $APP_STORE_CONNECT_USERNAME
       
-      # Specify Ruby version to match your Gemfile
-      ruby_version: 3.1.0  # Ensure this matches your project's Ruby version
+      # Xcode-specific settings
       xcode: latest # Use the latest stable Xcode version
       cocoapods: default # Automatically install CocoaPods dependencies
 
@@ -57,4 +56,4 @@ workflows:
     publishing:
       email:
         recipients:
-          - eagle0504@gmail.com
+          - your-email@example.com
