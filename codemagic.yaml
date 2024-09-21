@@ -1,4 +1,57 @@
 workflows:
-    ios-workflow-id:
-        name: iOS Sample Workflow
-        # ......
+  ios-workflow-id:
+    name: iOS App Store Release Workflow
+    
+    environment:
+      vars:
+        # These variables are stored securely in Codemagic and are automatically used.
+        APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
+        APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
+        # Optionally, include your Apple Developer Account username
+        APP_STORE_CONNECT_USERNAME: $APP_STORE_CONNECT_USERNAME
+
+      # iOS-specific settings
+      xcode: latest # Use the latest stable Xcode version
+      cocoapods: default # Automatically install CocoaPods dependencies
+
+      # Secure store for iOS certificates and provisioning profiles
+      keychain:
+        provisioning_profiles:
+          - Encrypted(...) # Encrypted provisioning profile from Codemagic UI
+
+    scripts:
+      - name: Install dependencies
+        script: |
+          gem install bundler
+          bundle install
+          bundle exec pod install
+
+      - name: Build iOS App for App Store Distribution
+        script: |
+          xcodebuild -workspace ios/Runner.xcworkspace \
+          -scheme "Runner" \
+          -configuration Release \
+          -archivePath $HOME/output/Runner.xcarchive archive \
+          -sdk iphoneos \
+          -allowProvisioningUpdates \
+          -destination "generic/platform=iOS"
+
+      - name: Export Archive to IPA
+        script: |
+          xcodebuild -exportArchive \
+          -archivePath $HOME/output/Runner.xcarchive \
+          -exportPath $HOME/output \
+          -exportOptionsPlist ios/ExportOptions.plist
+
+      - name: Upload IPA to App Store Connect
+        script: |
+          bundle exec fastlane pilot upload --ipa $HOME/output/Runner.ipa \
+          --username $APP_STORE_CONNECT_USERNAME \
+          --skip_waiting_for_build_processing true
+
+    publishing:
+      # Optional: Send notifications to slack, email or other integrations
+      slack:
+        channel: "#build-notifications"
+        message: "App Store Submission for iOS completed successfully!"
