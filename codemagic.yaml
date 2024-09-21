@@ -15,11 +15,15 @@ workflows:
       cocoapods: default # Automatically install CocoaPods dependencies
 
     scripts:
-      - name: Install dependencies
+      - name: Install Bundler
         script: |
           gem install bundler
-          bundle install
-          bundle exec pod install
+          echo "Bundler version: $(bundle -v)" # Output bundler version for debugging
+
+      - name: Install dependencies using Bundler
+        script: |
+          bundle install --verbose # Verbose output to catch errors
+          bundle exec pod install --verbose # Verbose pod install for CocoaPods
 
       - name: Build iOS App for App Store Distribution
         script: |
